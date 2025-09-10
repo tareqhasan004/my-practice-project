@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crime Record Management System — Project Output</title>
+  <style>
+    
+
+    :root{
+      
+      --bg: #0b1220;            
+      --surface: #0f172a;       
+      --surface-2: #111827;     
+      --muted: #9aa4b2;         
+      --text: #e5e7eb;          
+      --brand: #5ea1ff;         
+      --accent: #22d3ee;        
+      --ok: #10b981;            
+      --warn: #f59e0b;          
+      --danger: #ef4444;        
+      --ring: 0 0 0 3px rgba(94,161,255,.25);
+      --radius: 16px;
+      --shadow: 0 24px 48px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03);
+      --border: 1px solid rgba(255,255,255,.08);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:linear-gradient(180deg,#0a1020 0%, #0b1220 40%, #0b1220 100%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      line-height:1.55;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    /* Header */
+    header.hero{
+      background: radial-gradient(1200px 400px at 20% 0%, rgba(94,161,255,.25), transparent 60%),
+                  linear-gradient(90deg, var(--surface) 0%, #1f2937 50%, #0b1220 100%);
+      border-bottom: var(--border);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-inner{
+      max-width:1200px; margin:0 auto; padding:34px 20px 26px; display:grid; grid-template-columns:1.2fr .8fr; gap:20px; align-items:stretch;
+    }
+    .title{font-size:clamp(22px,4.5vw,40px); margin:0 0 6px; letter-spacing:.2px}
+    .subtitle{color:var(--muted); margin:0}
+    .badge{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.35); color:#b7f5ff; font-size:12px}
+    .badge .dot{width:8px; height:8px; border-radius:999px; background:var(--accent)}
+
+    .statbar{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:14px}
+    .stat{
+      background:rgba(255,255,255,.03); border:var(--border); border-radius:14px; padding:12px;
+    }
+    .stat .k{font-size:22px; font-weight:700}
+    .k.ok{color:var(--ok)} .k.mid{color:var(--warn)} .k.bad{color:var(--danger)}
+
+    .panel{background:var(--surface-2); border:var(--border); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .panel.pad{padding:20px}
+
+    /* Navigation */
+    nav.nav{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(180%) blur(10px);
+      background:rgba(10,16,32,.6); border-bottom:var(--border);
+    }
+    .nav-inner{max-width:1200px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:700}
+    .logo{width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--brand),var(--accent)); box-shadow:0 6px 18px rgba(94,161,255,.35)}
+    .menu{display:flex; gap:10px; flex-wrap:wrap}
+    .menu a{color:var(--text); padding:8px 12px; border-radius:10px}
+    .menu a:hover{background:rgba(255,255,255,.06); text-decoration:none}
+
+    /* Layout */
+    .wrap{max-width:1200px; margin:0 auto; padding:26px 20px 80px}
+    .section{margin-top:34px}
+    .section h2{margin:0 0 8px; font-size:clamp(18px,3vw,26px)}
+    .section p{margin:0; color:var(--muted)}
+
+    /* Tables */
+    .table-wrap{overflow:auto; border-radius:14px; border:var(--border); margin-top:12px}
+    table{width:100%; border-collapse:separate; border-spacing:0}
+    thead th{position:sticky; top:0; background:rgba(10,16,32,.7); backdrop-filter:blur(6px); text-align:left; padding:12px 14px; font-size:13px; color:#b9c3da; border-bottom:1px solid rgba(255,255,255,.08)}
+    tbody td{padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.06); font-size:14.5px}
+    tbody tr:hover{background:rgba(255,255,255,.03)}
+
+    .pill{display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid}
+    .pill.open{color:#ffedd5; border-color:rgba(245,158,11,.5); background:rgba(245,158,11,.12)}
+    .pill.closed{color:#dcfce7; border-color:rgba(16,185,129,.5); background:rgba(16,185,129,.12)}
+    .pill.ongoing{color:#e5e7eb; border-color:rgba(94,161,255,.55); background:rgba(94,161,255,.15)}
+    .pill.under{color:#e0e7ff; border-color:rgba(99,102,241,.45); background:rgba(99,102,241,.15)}
+    .pill.pending{color:#fef9c3; border-color:rgba(234,179,8,.45); background:rgba(234,179,8,.12)}
+    .pill.dismissed{color:#ffe4e6; border-color:rgba(244,63,94,.45); background:rgba(244,63,94,.12)}
+
+    /* Details blocks */
+    details{background:var(--surface-2); border:var(--border); border-radius:14px; overflow:hidden}
+    details+details{margin-top:12px}
+    summary{list-style:none; cursor:pointer; padding:14px 16px; display:flex; align-items:center; gap:10px}
+    summary::-webkit-details-marker{display:none}
+    details[open] summary{border-bottom:1px solid rgba(255,255,255,.06)}
+
+    /* Grid helpers */
+    .grid{display:grid; gap:16px}
+    .grid.cols-2{grid-template-columns:1fr 1fr}
+    .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    .grid.cols-4{grid-template-columns:repeat(4,1fr)}
+
+    /* Footer */
+    footer{margin-top:40px; color:var(--muted); font-size:13px; text-align:center}
+
+    /* Responsive */
+    @media (max-width: 1000px){
+      .hero-inner{grid-template-columns:1fr}
+      .grid.cols-3{grid-template-columns:1fr 1fr}
+      .grid.cols-4{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 650px){
+      .menu{display:none}
+      .grid.cols-2, .grid.cols-3, .grid.cols-4{grid-template-columns:1fr}
+    }
+
+    /* Print styles */
+    @media print{
+      body{background:#fff; color:#000}
+      header.hero, nav.nav{position:static; background:#fff; box-shadow:none}
+      .panel, details{box-shadow:none; border-color:#bbb}
+      a{text-decoration:underline; color:#000}
+      .pill{border-color:#888; color:#000; background:#fff}
+    }
+  </style>
+</head>
+<body>
+  <!-- ============================== HEADER ============================== -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="panel pad">
+        <div class="badge"><span class="dot"></span> SQL → Static Frontend (No JS)</div>
+        <h1 class="title">Crime Record Management System</h1>
+        <p class="subtitle">Complete, printable project output generated from your database design and sample data.</p>
+        <div class="statbar">
+          <div class="stat"><div class="t">Users</div><div class="k">10</div></div>
+          <div class="stat"><div class="t">Officers</div><div class="k">10</div></div>
+          <div class="stat"><div class="t">Crimes</div><div class="k mid">10</div></div>
+          <div class="stat"><div class="t">Court Cases</div><div class="k">10</div></div>
+        </div>
+      </div>
+      <aside class="panel pad">
+        <h3 style="margin:0 0 6px">Dataset Snapshot (from dump)</h3>
+        <p class="subtitle" style="margin:0 0 10px">Rows per table: <strong>10</strong> across all entities; status mix shown below.</p>
+        <ul style="margin:0 0 10px 18px">
+          <li><strong>Crimes status:</strong> <span class="pill open">open: 4</span> <span class="pill closed">closed: 3</span> <span class="pill under">under investigation: 3</span></li>
+          <li><strong>Court cases:</strong> <span class="pill pending">pending</span> / <span class="pill closed">closed</span> / <span class="pill dismissed">dismissed</span></li>
+          <li><strong>Time range:</strong> 2025‑07‑01 → 2025‑08‑30</li>
+        </ul>
+        <small class="subtitle">Tip: Print this page to PDF for submission, or host the single HTML file.</small>
+      </aside>
+    </div>
+  </header>
+
+  <!-- ============================== NAV ================================ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand"><span class="logo" aria-hidden></span> CRMS</div>
+      <div class="menu" aria-label="Primary">
+        <a href="#users">Users</a>
+        <a href="#officers">Officers</a>
+        <a href="#locations">Crime Locations</a>
+        <a href="#crimes">Crimes</a>
+        <a href="#witnesses">Witnesses</a>
+        <a href="#suspects">Suspects</a>
+        <a href="#victims">Victims</a>
+        <a href="#reports">Case Reports</a>
+        <a href="#status">Case Status</a>
+        <a href="#court">Court Cases</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <!-- ============================ USERS ============================== -->
+    <section id="users" class="section">
+      <h2>Users</h2>
+      <p>Table: <code>users</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>user_id</th>
+              <th>username</th>
+              <th>password (hash)</th>
+              <th>role</th>
+              <th>created_at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>admin_bd</td><td>713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca</td><td>admin</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>2</td><td>officer_riaz</td><td>09d7ea034c91ebc3cabf50dc38bfc634e21ddf43a7383a79b82f7a1b9d1565d9</td><td>officer</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>3</td><td>officer_tania</td><td>5c798b07cc0542168102c99c59908731492c64cfd2580f6183d8987a27fcb703</td><td>officer</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>4</td><td>guest_shanto</td><td>acd793966c78003ce905c3e0238a261ecfbc61aba35cb9297069cc9c3dcca239</td><td>guest</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>5</td><td>guest_rina</td><td>0d0ac0ccc0c4348f17f976f13c17deaf55b748e9400338bb4ede1656199b5df6</td><td>guest</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>6</td><td>admin_rasel</td><td>60b3b2f7a454036f6378b287002e6b32445040cf7f6ea39d1aafa303ca51e2eb</td><td>admin</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>7</td><td>officer_mim</td><td>28d888ef2cb2984dfa0217f7a849c88ed70a814ee484ebe95ba7422a474e3709</td><td>officer</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>8</td><td>guest_ruby</td><td>56348ab052c6977d85695a3882dd4a668bbd4e9aeccb713f84a11d923393939d</td><td>guest</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>9</td><td>officer_jamal</td><td>3ce1c83cfffbaa48c7a8a6c0f00c0f78b3dd25afcf914e208acaac3ecc07565b</td><td>officer</td><td>2025-07-14 07:33:10</td></tr>
+            <tr><td>10</td><td>guest_salma</td><td>7fcb3edb9669c5170696f4a1bfd7fe95f1941890a7454e0df4933583734e0bad</td><td>guest</td><td>2025-07-14 07:33:10</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ OFFICERS =========================== -->
+    <section id="officers" class="section">
+      <h2>Officers</h2>
+      <p>Table: <code>officers</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>officer_id</th>
+              <th>name</th>
+              <th>badge_number</th>
+              <th>rank</th>
+              <th>phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Inspector Riaz</td><td>BD2025001</td><td>Inspector</td><td>01710000001</td></tr>
+            <tr><td>2</td><td>Sergeant Tania</td><td>BD2025002</td><td>Sergeant</td><td>01710000002</td></tr>
+            <tr><td>3</td><td>Lieutenant Jamal</td><td>BD2025003</td><td>Lieutenant</td><td>01710000003</td></tr>
+            <tr><td>4</td><td>Captain Mim</td><td>BD2025004</td><td>Captain</td><td>01710000004</td></tr>
+            <tr><td>5</td><td>Detective Rasel</td><td>BD2025005</td><td>Detective</td><td>01710000005</td></tr>
+            <tr><td>6</td><td>Inspector Salma</td><td>BD2025006</td><td>Inspector</td><td>01710000006</td></tr>
+            <tr><td>7</td><td>Sergeant Karim</td><td>BD2025007</td><td>Sergeant</td><td>01710000007</td></tr>
+            <tr><td>8</td><td>Lieutenant Ruby</td><td>BD2025008</td><td>Lieutenant</td><td>01710000008</td></tr>
+            <tr><td>9</td><td>Captain Hasan</td><td>BD2025009</td><td>Captain</td><td>01710000009</td></tr>
+            <tr><td>10</td><td>Detective Nabila</td><td>BD2025010</td><td>Detective</td><td>01710000010</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ LOCATIONS ========================== -->
+    <section id="locations" class="section">
+      <h2>Crime Locations</h2>
+      <p>Table: <code>crime_locations</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>location_id</th>
+              <th>location_name</th>
+              <th>address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Gulshan</td><td>Road 27, Gulshan-2, Dhaka</td></tr>
+            <tr><td>2</td><td>Dhanmondi</td><td>House 45, Road 2, Dhanmondi, Dhaka</td></tr>
+            <tr><td>3</td><td>Mirpur</td><td>Sector 10, Mirpur, Dhaka</td></tr>
+            <tr><td>4</td><td>Motijheel</td><td>Business Area, Motijheel, Dhaka</td></tr>
+            <tr><td>5</td><td>Banani</td><td>Road 11, Banani, Dhaka</td></tr>
+            <tr><td>6</td><td>Uttara</td><td>Sector 7, Uttara, Dhaka</td></tr>
+            <tr><td>7</td><td>Jatrabari</td><td>Near Bus Stand, Jatrabari, Dhaka</td></tr>
+            <tr><td>8</td><td>Mohammadpur</td><td>Block C, Mohammadpur, Dhaka</td></tr>
+            <tr><td>9</td><td>Khilgaon</td><td>East Khilgaon, Dhaka</td></tr>
+            <tr><td>10</td><td>Savar</td><td>Savar Upazila, Dhaka</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ CRIMES ============================= -->
+    <section id="crimes" class="section">
+      <h2>Crimes</h2>
+      <p>Table: <code>crimes</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>crime_id</th>
+              <th>crime_type</th>
+              <th>description</th>
+              <th>location_id</th>
+              <th>date_reported</th>
+              <th>status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Robbery</td><td>Robbery at a jewelry shop</td><td>1</td><td>2025-07-01</td><td><span class="pill under">under investigation</span></td></tr>
+            <tr><td>2</td><td>Assault</td><td>Physical assault in a residential area</td><td>2</td><td>2025-07-02</td><td><span class="pill open">open</span></td></tr>
+            <tr><td>3</td><td>Burglary</td><td>Home break-in and theft</td><td>3</td><td>2025-07-03</td><td><span class="pill closed">closed</span></td></tr>
+            <tr><td>4</td><td>Fraud</td><td>Online banking fraud reported</td><td>4</td><td>2025-07-04</td><td><span class="pill open">open</span></td></tr>
+            <tr><td>5</td><td>Drug Possession</td><td>Arrested with illegal substances</td><td>5</td><td>2025-07-05</td><td><span class="pill closed">closed</span></td></tr>
+            <tr><td>6</td><td>Vandalism</td><td>Damage to public property</td><td>6</td><td>2025-07-06</td><td><span class="pill open">open</span></td></tr>
+            <tr><td>7</td><td>Kidnapping</td><td>Missing child case</td><td>7</td><td>2025-07-07</td><td><span class="pill under">under investigation</span></td></tr>
+            <tr><td>8</td><td>Arson</td><td>Fire incident at a warehouse</td><td>8</td><td>2025-07-08</td><td><span class="pill closed">closed</span></td></tr>
+            <tr><td>9</td><td>Hacking</td><td>Cyber attack on company server</td><td>9</td><td>2025-07-09</td><td><span class="pill open">open</span></td></tr>
+            <tr><td>10</td><td>Homicide</td><td>Murder investigation ongoing</td><td>10</td><td>2025-07-10</td><td><span class="pill under">under investigation</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ WITNESSES ========================== -->
+    <section id="witnesses" class="section">
+      <h2>Witnesses</h2>
+      <p>Table: <code>witnesses</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>witness_id</th>
+              <th>crime_id</th>
+              <th>name</th>
+              <th>contact</th>
+              <th>statement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>Emon Hossain</td><td>01711110001</td><td>Saw suspicious men near the jewelry shop.</td></tr>
+            <tr><td>2</td><td>2</td><td>Shila Akter</td><td>01711110002</td><td>Heard shouting and a fight.</td></tr>
+            <tr><td>3</td><td>3</td><td>Rafiq Chowdhury</td><td>01711110003</td><td>Noticed break-in at night.</td></tr>
+            <tr><td>4</td><td>4</td><td>Nasrin Sultana</td><td>01711110004</td><td>Received suspicious phone calls.</td></tr>
+            <tr><td>5</td><td>5</td><td>Jamal Uddin</td><td>01711110005</td><td>Observed drug deal in Banani.</td></tr>
+            <tr><td>6</td><td>6</td><td>Sumaiya Begum</td><td>01711110006</td><td>Saw people painting graffiti.</td></tr>
+            <tr><td>7</td><td>7</td><td>Karim Hossain</td><td>01711110007</td><td>Noticed child missing from school.</td></tr>
+            <tr><td>8</td><td>8</td><td>Farhana Islam</td><td>01711110008</td><td>Smelled smoke near warehouse.</td></tr>
+            <tr><td>9</td><td>9</td><td>Rashed Mia</td><td>01711110009</td><td>Saw unusual computer activity.</td></tr>
+            <tr><td>10</td><td>10</td><td>Lina Akter</td><td>01711110010</td><td>Heard gunshots near the river.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ SUSPECTS =========================== -->
+    <section id="suspects" class="section">
+      <h2>Suspects</h2>
+      <p>Table: <code>suspects</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>suspect_id</th>
+              <th>name</th>
+              <th>age</th>
+              <th>gender</th>
+              <th>address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Rafiq Islam</td><td>34</td><td>male</td><td>House 10, Road 5, Gulshan</td></tr>
+            <tr><td>2</td><td>Salma Khatun</td><td>28</td><td>female</td><td>House 15, Dhanmondi</td></tr>
+            <tr><td>3</td><td>Abdul Karim</td><td>40</td><td>male</td><td>Sector 12, Mirpur</td></tr>
+            <tr><td>4</td><td>Ayesha Begum</td><td>22</td><td>female</td><td>Banani, Road 14</td></tr>
+            <tr><td>5</td><td>Jamal Uddin</td><td>37</td><td>male</td><td>Uttara, Sector 9</td></tr>
+            <tr><td>6</td><td>Fatema Rahman</td><td>29</td><td>female</td><td>Motijheel, Block B</td></tr>
+            <tr><td>7</td><td>Sultan Ahmed</td><td>31</td><td>male</td><td>Jatrabari, Near Bus Stand</td></tr>
+            <tr><td>8</td><td>Nabila Akter</td><td>26</td><td>female</td><td>Mohammadpur, Block D</td></tr>
+            <tr><td>9</td><td>Kamal Hossain</td><td>45</td><td>male</td><td>East Khilgaon</td></tr>
+            <tr><td>10</td><td>Rina Yasmin</td><td>33</td><td>female</td><td>Savar Upazila</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ VICTIMS ============================ -->
+    <section id="victims" class="section">
+      <h2>Victims</h2>
+      <p>Table: <code>victims</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>victim_id</th>
+              <th>name</th>
+              <th>age</th>
+              <th>gender</th>
+              <th>address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Monir Hossain</td><td>30</td><td>male</td><td>Gulshan</td></tr>
+            <tr><td>2</td><td>Nusrat Jahan</td><td>38</td><td>female</td><td>Dhanmondi</td></tr>
+            <tr><td>3</td><td>Sabbir Ahmed</td><td>25</td><td>male</td><td>Mirpur</td></tr>
+            <tr><td>4</td><td>Rokeya Sultana</td><td>41</td><td>female</td><td>Motijheel</td></tr>
+            <tr><td>5</td><td>Jahid Hasan</td><td>36</td><td>male</td><td>Banani</td></tr>
+            <tr><td>6</td><td>Mina Akter</td><td>29</td><td>female</td><td>Uttara</td></tr>
+            <tr><td>7</td><td>Shafiq Islam</td><td>34</td><td>male</td><td>Jatrabari</td></tr>
+            <tr><td>8</td><td>Anika Parvin</td><td>27</td><td>female</td><td>Mohammadpur</td></tr>
+            <tr><td>9</td><td>Saiful Islam</td><td>39</td><td>male</td><td>Khilgaon</td></tr>
+            <tr><td>10</td><td>Tasnim Ferdous</td><td>44</td><td>female</td><td>Savar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ CASE REPORTS ======================= -->
+    <section id="reports" class="section">
+      <h2>Case Reports</h2>
+      <p>Table: <code>case_reports</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>report_id</th>
+              <th>crime_id</th>
+              <th>officer_id</th>
+              <th>report</th>
+              <th>created_at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>1</td><td>Interviewed witnesses and started investigation.</td><td>2025-07-02 05:00:00</td></tr>
+            <tr><td>2</td><td>2</td><td>2</td><td>Victim treated at hospital, suspect at large.</td><td>2025-07-03 06:00:00</td></tr>
+            <tr><td>3</td><td>3</td><td>3</td><td>Suspect arrested and confessed.</td><td>2025-07-05 09:00:00</td></tr>
+            <tr><td>4</td><td>4</td><td>4</td><td>Collected bank statements for fraud case.</td><td>2025-07-06 04:00:00</td></tr>
+            <tr><td>5</td><td>5</td><td>5</td><td>Illegal substances seized, case closed.</td><td>2025-07-07 11:00:00</td></tr>
+            <tr><td>6</td><td>6</td><td>6</td><td>Graffiti cleaned and public informed.</td><td>2025-07-08 07:00:00</td></tr>
+            <tr><td>7</td><td>7</td><td>7</td><td>Search parties deployed near Jatrabari.</td><td>2025-07-09 08:00:00</td></tr>
+            <tr><td>8</td><td>8</td><td>8</td><td>Arson suspect taken into custody.</td><td>2025-07-10 10:00:00</td></tr>
+            <tr><td>9</td><td>9</td><td>9</td><td>IT team investigating cybercrime.</td><td>2025-07-11 05:00:00</td></tr>
+            <tr><td>10</td><td>10</td><td>10</td><td>Forensic team collecting evidence.</td><td>2025-07-12 03:00:00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ CASE STATUS ======================== -->
+    <section id="status" class="section">
+      <h2>Case Status</h2>
+      <p>Table: <code>case_status</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>status_id</th>
+              <th>crime_id</th>
+              <th>status_update</th>
+              <th>updated_at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>Robbery under active investigation.</td><td>2025-07-02 04:00:00</td></tr>
+            <tr><td>2</td><td>2</td><td>Victim recovering from injuries.</td><td>2025-07-03 05:00:00</td></tr>
+            <tr><td>3</td><td>3</td><td>Suspect arrested and charged.</td><td>2025-07-05 08:00:00</td></tr>
+            <tr><td>4</td><td>4</td><td>Banking fraud report filed.</td><td>2025-07-06 03:30:00</td></tr>
+            <tr><td>5</td><td>5</td><td>Drug possession case closed.</td><td>2025-07-07 10:00:00</td></tr>
+            <tr><td>6</td><td>6</td><td>Vandalism reported and under review.</td><td>2025-07-08 06:00:00</td></tr>
+            <tr><td>7</td><td>7</td><td>Search operation ongoing.</td><td>2025-07-09 07:00:00</td></tr>
+            <tr><td>8</td><td>8</td><td>Arson suspect in custody.</td><td>2025-07-10 09:00:00</td></tr>
+            <tr><td>9</td><td>9</td><td>Cyber attack investigation initiated.</td><td>2025-07-11 04:30:00</td></tr>
+            <tr><td>10</td><td>10</td><td>Murder case evidence being collected.</td><td>2025-07-12 02:45:00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ COURT CASES ======================== -->
+    <section id="court" class="section">
+      <h2>Court Cases</h2>
+      <p>Table: <code>court_cases</code> — 10 rows</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>court_case_id</th>
+              <th>crime_id</th>
+              <th>case_number</th>
+              <th>court_name</th>
+              <th>judge_name</th>
+              <th>case_status</th>
+              <th>hearing_date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>DH-C-2025-0001</td><td>Dhaka Metropolitan Court</td><td>Judge Alam</td><td><span class="pill pending">pending</span></td><td>2025-08-01</td></tr>
+            <tr><td>2</td><td>2</td><td>DH-C-2025-0002</td><td>Dhaka Metropolitan Court</td><td>Judge Rahman</td><td><span class="pill pending">pending</span></td><td>2025-08-05</td></tr>
+            <tr><td>3</td><td>3</td><td>CH-C-2025-0003</td><td>Chittagong Court</td><td>Judge Akter</td><td><span class="pill closed">closed</span></td><td>2025-07-25</td></tr>
+            <tr><td>4</td><td>4</td><td>SY-C-2025-0004</td><td>Sylhet Court</td><td>Judge Karim</td><td><span class="pill pending">pending</span></td><td>2025-08-10</td></tr>
+            <tr><td>5</td><td>5</td><td>KH-C-2025-0005</td><td>Khulna Court</td><td>Judge Chowdhury</td><td><span class="pill closed">closed</span></td><td>2025-07-30</td></tr>
+            <tr><td>6</td><td>6</td><td>RA-C-2025-0006</td><td>Rajshahi Court</td><td>Judge Siddique</td><td><span class="pill pending">pending</span></td><td>2025-08-15</td></tr>
+            <tr><td>7</td><td>7</td><td>BA-C-2025-0007</td><td>Barisal Court</td><td>Judge Nasreen</td><td><span class="pill pending">pending</span></td><td>2025-08-20</td></tr>
+            <tr><td>8</td><td>8</td><td>CO-C-2025-0008</td><td>Comilla Court</td><td>Judge Ahmed</td><td><span class="pill closed">closed</span></td><td>2025-07-28</td></tr>
+            <tr><td>9</td><td>9</td><td>JU-C-2025-0009</td><td>Jessore Court</td><td>Judge Sultana</td><td><span class="pill pending">pending</span></td><td>2025-08-25</td></tr>
+            <tr><td>10</td><td>10</td><td>RA-C-2025-0010</td><td>Rangpur Court</td><td>Judge Hasan</td><td><span class="pill pending">pending</span></td><td>2025-08-30</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ RELATION VIEW (EXTRA) ============= -->
+    <section id="relations" class="section">
+      <h2>Joined View: Crimes × Locations</h2>
+      <p>This convenience view helps viva examiners understand foreign keys. (Computed from your dump.)</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>crime_id</th>
+              <th>crime_type</th>
+              <th>location_name</th>
+              <th>status</th>
+              <th>date_reported</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Robbery</td><td>Gulshan</td><td><span class="pill under">under investigation</span></td><td>2025-07-01</td></tr>
+            <tr><td>2</td><td>Assault</td><td>Dhanmondi</td><td><span class="pill open">open</span></td><td>2025-07-02</td></tr>
+            <tr><td>3</td><td>Burglary</td><td>Mirpur</td><td><span class="pill closed">closed</span></td><td>2025-07-03</td></tr>
+            <tr><td>4</td><td>Fraud</td><td>Motijheel</td><td><span class="pill open">open</span></td><td>2025-07-04</td></tr>
+            <tr><td>5</td><td>Drug Possession</td><td>Banani</td><td><span class="pill closed">closed</span></td><td>2025-07-05</td></tr>
+            <tr><td>6</td><td>Vandalism</td><td>Uttara</td><td><span class="pill open">open</span></td><td>2025-07-06</td></tr>
+            <tr><td>7</td><td>Kidnapping</td><td>Jatrabari</td><td><span class="pill under">under investigation</span></td><td>2025-07-07</td></tr>
+            <tr><td>8</td><td>Arson</td><td>Mohammadpur</td><td><span class="pill closed">closed</span></td><td>2025-07-08</td></tr>
+            <tr><td>9</td><td>Hacking</td><td>Khilgaon</td><td><span class="pill open">open</span></td><td>2025-07-09</td></tr>
+            <tr><td>10</td><td>Homicide</td><td>Savar</td><td><span class="pill under">under investigation</span></td><td>2025-07-10</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================ NOTES ============================== -->
+    <section class="section">
+      <details>
+        <summary><strong>Submission Notes</strong></summary>
+        <div class="panel pad">
+          <ul style="margin:0 0 0 18px">
+            <li>All data is reproduced exactly from your phpMyAdmin dump (counts, strings, dates, IDs).</li>
+            <li>Color pills map to enum/status values 1:1 (open, closed, under investigation, pending, dismissed).</li>
+            <li>Use <em>Print → Save as PDF</em> for attaching to your report. This single file is also hostable on GitHub Pages.</li>
+            <li>No JavaScript is used, so the file is secure and easy to review during viva.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>© 2025 Crime Record Management System — Static Output UI</footer>
+</body>
+</html>
